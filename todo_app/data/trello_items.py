@@ -10,8 +10,6 @@ import uuid
     Therefore verify=False is necessary on requests call as a work-around
 """
 
-allItems = Item()
-
 trello_boards_url       = "https://api.trello.com/1/boards/"
 trello_cards_url        = "https://api.trello.com/1/cards"
 trello_board_id         = os.environ.get('TRELLO_BOARD_ID','')
@@ -34,6 +32,7 @@ def get_items():
     """
     get_item_req_url = trello_boards_url+trello_board_id+'/cards/?'+trello_api_security 
     response = requests.request("GET", get_item_req_url, data='',  headers=trello_default_get_header, verify=False)
+
     response_json = response.json()
     
     todo_items = []
@@ -41,30 +40,24 @@ def get_items():
 
     for item in response_json:
         if item.get('idList','') == trello_board_list_id_todo:
-            todo_items.append(item)
+            todo_items.append(Item(
+                    item.get('id',''),
+                    item.get('name',''),
+                    'todo'
+                ))
         elif item.get('idList','') == trello_board_list_id_done:
-            done_items.append(item)                
+            done_items.append(Item(
+                    item.get('id',''),
+                    item.get('name',''),
+                    'done'
+                ))
+
     return_items = {'todo':todo_items,'done':done_items}
     session.clear()
     return session.get('items', return_items.copy())
 
 
 def add_item(title):
-    """
-    Adds a new item with the specified title/name to the session.
-
-    Args:
-        name: The name of the item.
-        idList: The ID of the List to add the card
-        key: API Key
-        token: API T oken
-        
-    Returns:
-        item: The saved item.
-    """
-    # items = get_items()
-
-    # headers = {"Accept": "application/json"}
     query = {
         'idList':   trello_board_list_id_todo,
         'key':      trello_api_key,
@@ -72,35 +65,22 @@ def add_item(title):
         'name':     title
     }
     response = requests.request("POST",trello_cards_url,headers=trello_default_post_header,params=query,verify=False)
-    print("ADD ITEM RESPONSE:", response)
-
-
     get_items()
-    # items['todo'].append(query)
-    # session['items'] = items
-
     return query
 
 
 def update_item(item_to_update_id,source):
-
     if source.lower() == "todo":
         target_list = trello_board_list_id_done
     elif source.lower() == "done":
         target_list = trello_board_list_id_todo
-
     update_item_url = trello_cards_url+'/'+item_to_update_id+'?idList='+target_list
-
     query = {
         'key':      trello_api_key,
         'token':    trello_api_token
     }
-
     response = requests.request("PUT",update_item_url,headers=trello_default_put_header,params=query,verify=False)
-    print("UPDATE ITEM RESPONSE:", response)
-
     get_items()
-
     return query
 
 
