@@ -13,15 +13,6 @@ def test_data():
     items.append(Item('id5','item_name_5','todo'))
     return items
 
-def test_view_model_done_property_returns_todo_items_only(test_data):
-    # arrange
-    items = test_data
-    view_model = ViewModel(items)
-    # act
-    filtered_items = view_model.todo_items
-    # assert
-    assert len(filtered_items) == 3
-
 def test_view_model_done_property_returns_done_items_only(test_data):
     # arrange
     items = test_data
@@ -30,3 +21,12 @@ def test_view_model_done_property_returns_done_items_only(test_data):
     filtered_items = view_model.done_items
     # assert
     assert len(filtered_items) == 2
+
+def test_view_model_todo_property_returns_todo_items_only(test_data):
+    # arrange
+    items = test_data
+    view_model = ViewModel(items)
+    # act
+    filtered_items = view_model.todo_items
+    # assert
+    assert len(filtered_items) == 3
