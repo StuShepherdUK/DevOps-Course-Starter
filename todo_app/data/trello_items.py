@@ -33,26 +33,25 @@ def get_items():
 
     response_json = response.json()
     
-    todo_items = []
-    done_items = []
+    all_items = []
 
     for item in response_json:
         if item.get('idList','') == trello_board_list_id_todo:
-            todo_items.append(Item(
+            all_items.append(Item(
                     item.get('id',''),
                     item.get('name',''),
                     'todo'
                 ))
+
         elif item.get('idList','') == trello_board_list_id_done:
-            done_items.append(Item(
+            all_items.append(Item(
                     item.get('id',''),
                     item.get('name',''),
                     'done'
                 ))
 
-    return_items = {'todo':todo_items,'done':done_items}
+    return_items = all_items
     session.clear()
-    #return session.get('items', return_items.copy())
     return return_items
 
 
