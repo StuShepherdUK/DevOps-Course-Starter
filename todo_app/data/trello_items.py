@@ -32,7 +32,7 @@ def get_items():
     response = requests.request("GET", get_item_req_url, data='',  headers=trello_default_get_header, verify=False)
 
     response_json = response.json()
-    
+    print(response_json)
     all_items = []
 
     for item in response_json:
