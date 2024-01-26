@@ -14,8 +14,7 @@
       <ul class="list-group mb-4">
         <!-- List items in todo list -->
         <h3>Todo Items:</h3>
-        {% for item in view_model.items  %}
-          {% if item.status == 'todo' %}
+        {% for item in view_model.todo_items  %}
             <li>
               <form action="{{ url_for('updateItem') }}" method="post" class="form-example">
                 {{ item.name }}
@@ -24,15 +23,13 @@
                 <input type="submit" value="Change Status" /> 
               </form>
             </li>
-          {% endif %}
         {% endfor %}
       </ul>
 
       <ul class="list-group mb-4">
         <!-- List items in done list -->
         <h3>Done Items:</h3>
-        {% for item in view_model.items  %}
-          {% if item.status == 'done' %}
+        {% for item in view_model.done_items  %}
             <li>
               <form action="{{ url_for('updateItem') }}" method="post" class="form-example">
                 {{ item.name }}
@@ -41,10 +38,8 @@
                 <input type="submit" value="Change Status" /> 
               </form>
             </li>
-          {% endif %}
         {% endfor %}
       </ul>
-
 
     </div>
     <!-- Form to add an additional item -->

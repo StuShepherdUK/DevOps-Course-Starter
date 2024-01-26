@@ -11,6 +11,7 @@ app.config.from_object(Config())
 def index():
     all_items = get_items()
 
+
     item_view_model = ViewModel(all_items)
     return render_template('index.html', view_model=item_view_model)
 
