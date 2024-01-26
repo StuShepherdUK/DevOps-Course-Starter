@@ -86,6 +86,6 @@ Summary example where the assert value of 3 was incorrect and the value of 2 was
 ```
 
 ### Current Tests Available
-* test_view_model
+* tests/test_view_model
   * test_view_model_done_property_returns_done_items_only
   * test_view_model_todo_property_returns_todo_items_only
