@@ -12,8 +12,28 @@
       <h2>Items</h2>
       <ul class="list-group mb-4">
         <!-- List items in todo list -->
-        {% for itm in todoitems %}
-          <li>{{ itm.title }}</li>
+        <h3>To Do:</h3>
+        {% for item in todoitems %}
+          <li>
+            <form action="{{ url_for('updateItem') }}" method="post" class="form-example">
+              {{ item.name }}
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="hidden" name="item_source" value="todo">
+              <input type="submit" value="Set as Completed" /> 
+            </form>
+          </li>
+
+        {% endfor %}
+        <h3>Completed:</h3>
+        {% for item in doneitems %}
+        <li>
+          <form action="{{ url_for('updateItem') }}" method="post" class="form-example">
+            {{ item.name }}
+            <input type="hidden" name="item_id" value="{{ item.id }}">
+            <input type="hidden" name="item_source" value="done">
+            <input type="submit" value="Set as To Do" /> 
+          </form>
+        </li>
         {% endfor %}
       </ul>
     </div>

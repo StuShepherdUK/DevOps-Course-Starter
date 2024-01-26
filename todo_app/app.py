@@ -1,24 +1,30 @@
 from flask import Flask, render_template, request, redirect
 from todo_app.flask_config import Config
 
-# Import session item functions
-from todo_app.data.session_items import get_items, add_item
+from todo_app.data.trello_items import get_items,add_item,update_item
 
 app = Flask(__name__)
 app.config.from_object(Config())
 
-# Main URL Homepage
 @app.route('/')
 def index():
-    # Render index.html using todo list items
-    return render_template('index.html', todoitems=get_items())
+    all_items = get_items()
+    return render_template('index.html', todoitems=all_items['todo'],doneitems=all_items['done'])
 
-# Main URL Homepage Form Submit
 @app.route('/', methods=['POST'])
 def addItem():
-    # Get Form item 'newitem'
     newItem = request.form.get('newitem')
-    # Validate newItem has content
-    if (newItem != None and newItem.strip() != ''):    add_item(newItem)
-    # Redirect to Main URL Homepage
+    if (newItem != None and newItem.strip() != ''):
+        add_item(newItem)
     return redirect('/')
+
+@app.route('/updateItem', methods=['POST'])
+def updateItem():
+    item_to_update_id = request.form['item_id']
+    item_source = request.form['item_source']
+    update_item(item_to_update_id,item_source)
+    return redirect('/')
+
+
+
+
