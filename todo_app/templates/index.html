@@ -13,11 +13,11 @@
       <ul class="list-group mb-4">
         <!-- List items in todo list -->
         <h3>To Do:</h3>
-        {% for itm in todoitems %}
+        {% for item in todoitems %}
           <li>
             <form action="{{ url_for('updateItem') }}" method="post" class="form-example">
-              {{ itm.name }}
-              <input type="hidden" name="item_id" value="{{ itm.id }}">
+              {{ item.name }}
+              <input type="hidden" name="item_id" value="{{ item.id }}">
               <input type="hidden" name="item_source" value="todo">
               <input type="submit" value="Set as Completed" /> 
             </form>
@@ -25,11 +25,11 @@
 
         {% endfor %}
         <h3>Completed:</h3>
-        {% for itm in doneitems %}
+        {% for item in doneitems %}
         <li>
           <form action="{{ url_for('updateItem') }}" method="post" class="form-example">
-            {{ itm.name }}
-            <input type="hidden" name="item_id" value="{{ itm.id }}">
+            {{ item.name }}
+            <input type="hidden" name="item_id" value="{{ item.id }}">
             <input type="hidden" name="item_source" value="done">
             <input type="submit" value="Set as To Do" /> 
           </form>
