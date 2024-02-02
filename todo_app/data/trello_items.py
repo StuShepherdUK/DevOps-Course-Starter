@@ -10,8 +10,6 @@ import uuid
     Therefore verify=False is necessary on requests call as a work-around
 """
 
-
-
 def get_items():
     """
     Fetches all saved items from the session.
@@ -29,7 +27,7 @@ def get_items():
     trello_board_list_id_done = os.environ.get('TRELLO_BOARD_LIST_ID_DONE','')
     
     get_item_req_url = trello_boards_url+trello_board_id+'/cards/?'+trello_api_security 
-    response = requests.request("GET", get_item_req_url, data='',  headers=trello_default_get_header, verify=False)
+    response = requests.get(get_item_req_url, data='',  headers=trello_default_get_header, verify=False)
 
     response_json = response.json()
     print(response_json)
@@ -70,7 +68,7 @@ def add_item(title):
         'token':    trello_api_token,
         'name':     title
     }
-    requests.request("POST",trello_cards_url,headers=trello_default_post_header,params=query,verify=False)
+    requests.post(trello_cards_url,headers=trello_default_post_header,params=query,verify=False)
     get_items()
     return query
 
@@ -94,7 +92,7 @@ def update_item(item_to_update_id,source):
         'key':      trello_api_key,
         'token':    trello_api_token
     }
-    response = requests.request("PUT",update_item_url,headers=trello_default_put_header,params=query,verify=False)
+    response = requests.put(update_item_url,headers=trello_default_put_header,params=query,verify=False)
     get_items()
     return query
 

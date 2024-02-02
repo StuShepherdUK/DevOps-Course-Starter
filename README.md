@@ -34,6 +34,7 @@ $ cp .env.template .env  # (first time only)
 
 The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/1.1.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
 
+
 ## Running the App
 
 Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:
@@ -86,6 +87,17 @@ Summary example where the assert value of 3 was incorrect and the value of 2 was
 ```
 
 ### Current Tests Available
-* tests/test_view_model
-  * test_view_model_done_property_returns_done_items_only
-  * test_view_model_todo_property_returns_todo_items_only
+* Unit Tests
+  * tests/test_view_model
+    * test_view_model_done_property_returns_done_items_only  
+    * test_view_model_todo_property_returns_todo_items_only
+* Integration Tests
+  * tests/test_app_client
+    * test_index_page
+
+### Test Dependencies
+Integration tests are set to use the test environment file .env.test instead of the main applications .env file
+
+Updates to any environment variables must be updated here along side the core environment files to maintain testing functionality
+
+*Note: Ensure no secrets are stored within the .env.test file*
