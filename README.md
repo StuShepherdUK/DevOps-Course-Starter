@@ -101,3 +101,48 @@ Integration tests are set to use the test environment file .env.test instead of 
 Updates to any environment variables must be updated here along side the core environment files to maintain testing functionality
 
 *Note: Ensure no secrets are stored within the .env.test file*
+
+
+### Deploying on Server(s) using Ansible
+
+#### Initial Setup
+
+- Atleast two servers on the same network, one control node, 1+ managed node
+  - managed nodes should have internet access enabled for port 5000
+- Ability to ssh to control node
+  - Access through either:
+    - Username / Password
+    - Shared SSH key
+      - ssh-keygen -t ed25519 -C "you@email.com"
+      - ssh-copy-id username@controlnodeip  (ec2-user@1.2.3.4)
+- From the control node, setup ability to ssh to the managed nodes
+  - Enable access through an SSH Key setup from the control node (Password access can not be used):
+    - ssh-keygen -t ed25519 -C "you@email.com"
+    - ssh-copy-id username@managednodeip  (ec2-user@1.2.3.4)
+- Within the control node, ensure ansible is installed
+  - ansible --version
+  - if not, install:
+    - sudo pip install ansible
+- Copy local files from "ansible/home/ec2-user" to the control node "/home/ec2-user" path
+    - .env.j2
+    - configure_webservers.yml
+    - controlled_nodes.ini
+    - todoapp.service
+
+- Ensure that the managed nodes are correctly listed within controlled_nodes.ini
+
+```
+    [webservers]
+    managednodeip1
+    managednodeip2
+    managednodeipx
+```
+
+#### Running Ansible
+
+- Within the control node:
+  - cd /home/ec2-user
+  - ansible-playbook configure_webservers.yml -i controlled_nodes.ini
+- Ensure that there are no errors
+- navigate to any host ip address in a public web browser:
+  - http://managednodeip:5000

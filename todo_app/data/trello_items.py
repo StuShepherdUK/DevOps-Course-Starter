@@ -17,83 +17,105 @@ def get_items():
     Returns:
         list: The list of saved items.
     """
-    trello_boards_url       = "https://api.trello.com/1/boards/"
-    trello_board_id         = os.environ.get('TRELLO_BOARD_ID','')
-    trello_api_key          = os.environ.get('TRELLO_API_KEY','')
-    trello_api_token        = os.environ.get('TRELLO_API_TOKEN','')
-    trello_api_security     = "key="+trello_api_key+"&token="+trello_api_token
-    trello_default_get_header   = {"Accept": "*/*"}
-    trello_board_list_id_todo = os.environ.get('TRELLO_BOARD_LIST_ID_TODO','')
-    trello_board_list_id_done = os.environ.get('TRELLO_BOARD_LIST_ID_DONE','')
-    
-    get_item_req_url = trello_boards_url+trello_board_id+'/cards/?'+trello_api_security 
-    response = requests.get(get_item_req_url, data='',  headers=trello_default_get_header, verify=False)
 
-    response_json = response.json()
-    print(response_json)
-    all_items = []
+    try:
+        trello_boards_url       = "https://api.trello.com/1/boards/"
+        trello_board_id         = os.environ.get('TRELLO_BOARD_ID','')
+        trello_api_key          = os.environ.get('TRELLO_API_KEY','')
+        trello_api_token        = os.environ.get('TRELLO_API_TOKEN','')
+        trello_api_security     = "key="+trello_api_key+"&token="+trello_api_token
+        trello_default_get_header   = {"Accept": "*/*"}
+        trello_board_list_id_todo = os.environ.get('TRELLO_BOARD_LIST_ID_TODO','')
+        trello_board_list_id_done = os.environ.get('TRELLO_BOARD_LIST_ID_DONE','')
+        
+        get_item_req_url = trello_boards_url+trello_board_id+'/cards/?'+trello_api_security 
+        
+        try:
+            response = requests.get(get_item_req_url, data='',  headers=trello_default_get_header, verify=False)
+        except:
+            response = requests.get(get_item_req_url, data='',  headers=trello_default_get_header)
 
-    for item in response_json:
-        if item.get('idList','') == trello_board_list_id_todo:
-            all_items.append(Item(
-                    item.get('id',''),
-                    item.get('name',''),
-                    'todo'
-                ))
+        response_json = response.json()
+        print(response_json)
+        all_items = []
 
-        elif item.get('idList','') == trello_board_list_id_done:
-            all_items.append(Item(
-                    item.get('id',''),
-                    item.get('name',''),
-                    'done'
-                ))
+        for item in response_json:
+            if item.get('idList','') == trello_board_list_id_todo:
+                all_items.append(Item(
+                        item.get('id',''),
+                        item.get('name',''),
+                        'todo'
+                    ))
 
-    return_items = all_items
-    session.clear()
-    return return_items
+            elif item.get('idList','') == trello_board_list_id_done:
+                all_items.append(Item(
+                        item.get('id',''),
+                        item.get('name',''),
+                        'done'
+                    ))
+
+        return_items = all_items
+        session.clear()
+        return return_items
+    except Exception as e:
+        print("An error occurred during get_items:", e)
+        return []
 
 
 def add_item(title):
 
-    trello_cards_url        = "https://api.trello.com/1/cards"
-    trello_board_list_id_todo = os.environ.get('TRELLO_BOARD_LIST_ID_TODO','')
-    trello_api_key          = os.environ.get('TRELLO_API_KEY','')
-    trello_api_token        = os.environ.get('TRELLO_API_TOKEN','')
-    trello_default_post_header   = {"Accept": "application/json"}
+    try:
+        trello_cards_url        = "https://api.trello.com/1/cards"
+        trello_board_list_id_todo = os.environ.get('TRELLO_BOARD_LIST_ID_TODO','')
+        trello_api_key          = os.environ.get('TRELLO_API_KEY','')
+        trello_api_token        = os.environ.get('TRELLO_API_TOKEN','')
+        trello_default_post_header   = {"Accept": "application/json"}
 
 
-    query = {
-        'idList':   trello_board_list_id_todo,
-        'key':      trello_api_key,
-        'token':    trello_api_token,
-        'name':     title
-    }
-    requests.post(trello_cards_url,headers=trello_default_post_header,params=query,verify=False)
-    get_items()
-    return query
+        query = {
+            'idList':   trello_board_list_id_todo,
+            'key':      trello_api_key,
+            'token':    trello_api_token,
+            'name':     title
+        }
+        try:
+            requests.post(trello_cards_url,headers=trello_default_post_header,params=query,verify=False)
+        except:
+            requests.post(trello_cards_url,headers=trello_default_post_header,params=query)
+
+        get_items()
+        return query
+    except Exception as e:
+        print("An error occurred during add_item:", e)
+        return {}
 
 
 def update_item(item_to_update_id,source):
 
+    try:
+        trello_cards_url        = "https://api.trello.com/1/cards"
+        trello_board_list_id_todo = os.environ.get('TRELLO_BOARD_LIST_ID_TODO','')
+        trello_board_list_id_done = os.environ.get('TRELLO_BOARD_LIST_ID_DONE','')
+        trello_api_key          = os.environ.get('TRELLO_API_KEY','')
+        trello_api_token        = os.environ.get('TRELLO_API_TOKEN','')
+        trello_default_put_header   = {"Accept": "application/json"}
 
-    trello_cards_url        = "https://api.trello.com/1/cards"
-    trello_board_list_id_todo = os.environ.get('TRELLO_BOARD_LIST_ID_TODO','')
-    trello_board_list_id_done = os.environ.get('TRELLO_BOARD_LIST_ID_DONE','')
-    trello_api_key          = os.environ.get('TRELLO_API_KEY','')
-    trello_api_token        = os.environ.get('TRELLO_API_TOKEN','')
-    trello_default_put_header   = {"Accept": "application/json"}
-
-    if source.lower() == "todo":
-        target_list = trello_board_list_id_done
-    elif source.lower() == "done":
-        target_list = trello_board_list_id_todo
-    update_item_url = trello_cards_url+'/'+item_to_update_id+'?idList='+target_list
-    query = {
-        'key':      trello_api_key,
-        'token':    trello_api_token
-    }
-    response = requests.put(update_item_url,headers=trello_default_put_header,params=query,verify=False)
-    get_items()
-    return query
-
+        if source.lower() == "todo":
+            target_list = trello_board_list_id_done
+        elif source.lower() == "done":
+            target_list = trello_board_list_id_todo
+        update_item_url = trello_cards_url+'/'+item_to_update_id+'?idList='+target_list
+        query = {
+            'key':      trello_api_key,
+            'token':    trello_api_token
+        }
+        try:
+            response = requests.put(update_item_url,headers=trello_default_put_header,params=query,verify=False)
+        except:
+            response = requests.put(update_item_url,headers=trello_default_put_header,params=query)
+        get_items()
+        return query
+    except Exception as e:
+        print("An error occurred during update_item:", e)
+        return {}
 
