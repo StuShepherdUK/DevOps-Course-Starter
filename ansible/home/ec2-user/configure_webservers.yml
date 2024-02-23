@@ -8,7 +8,7 @@
 
   - name: trello_api_token
     prompt: What is your Trello API Token?
-	
+
   tasks:
   - name: Install Git
     ansible.builtin.yum:
@@ -40,5 +40,29 @@
   - name: Git checkout
     ansible.builtin.git:
       repo: 'https://github.com/StuShepherdUK/DevOps-Course-Starter.git'
-      dest: /opt/todo
+      dest: /opt/todoapp
       version: module_4
+    become: yes
+
+  - name: Install Python Dependency Poetry
+    ansible.builtin.shell: poetry install
+    args:
+      chdir: /opt/todoapp
+
+  - name: Copy .env from template
+    ansible.builtin.template:
+      src: /home/ec2-user/.env.j2
+      dest: /opt/todoapp/.env
+
+  - name: Copy todoapp service file
+    ansible.builtin.copy:
+      src: /home/ec2-user/todoapp.service
+      dest: /etc/systemd/system/todoapp.service
+    become: yes
+
+  - name: Ensure service is running
+    ansible.builtin.systemd_service:
+      state: restarted
+      daemon_reload: true
+      name: todoapp.service
+    become: yes
