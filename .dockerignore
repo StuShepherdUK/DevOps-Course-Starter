@@ -1,0 +1,11 @@
+.env*
+.git*
+
+**/.github
+**/.venv
+**/.vscode
+**/ansible
+
+*.md
+
+__pycache__

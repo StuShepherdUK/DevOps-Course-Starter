@@ -146,3 +146,32 @@ Updates to any environment variables must be updated here along side the core en
 - Ensure that there are no errors
 - navigate to any host ip address in a public web browser:
   - http://managednodeip:5000
+
+
+
+
+## Additional Notes for Corporate Proxy Configuration
+
+### Docker
+
+Docker requires a proxy set within the Docker app itself to enable package connectivity and then proxy config setting to enable internal internet access to the docker image.
+
+Install local proxy as normal, opening localhost:3128
+
+Within Windows Docker, Add proxy settings:
+- Web Serer (HTTP) = http://localhost:3128
+- Web Server (HTTPS) = http://localhost:3128
+- BYpass proxy settings for these hosts & domains =  localhost,127.0.0.1,.CORPNAMEHERE.com
+
+Within Docker config file add proxy settings:
+C:\Users\<user>\.docker\config.json
+
+"proxies":
+ {
+   "default":
+   {
+     "httpProxy": "http://host.docker.internal:3128",
+     "httpsProxy": "http://host.docker.internal:3128",
+     "noProxy": "host.docker.internal,localhost,127.0.0.1,.CORPNAMEHERE.com"
+   }
+ }
