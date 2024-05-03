@@ -150,11 +150,11 @@ Updates to any environment variables must be updated here along side the core en
 
 
 
-## Additional Notes for Corporate Proxy Configuration
+## Deploying on Server(s) using Docker
 
-### Docker
+### Notes for Corporate Proxy Configuration
 
-Docker requires a proxy set within the Docker app itself to enable package connectivity and then proxy config setting to enable internal internet access to the docker image.
+Docker when running behind corporate proxy may require a proxy set within the Docker app itself to enable package connectivity and then proxy config setting to enable internal internet access to the docker image.
 
 Install local proxy as normal, opening localhost:3128
 
@@ -175,3 +175,45 @@ C:\Users\<user>\.docker\config.json
      "noProxy": "host.docker.internal,localhost,127.0.0.1,.CORPNAMEHERE.com"
    }
  }
+
+### Docker Commands
+
+#### Build
+
+Build the relevant environment (dev / prod) using the following commands:
+- docker build --target development --tag todo-app:dev .
+- docker build --target production --tag todo-app:prod .
+
+#### Run
+
+Run the docker project in the relevant environment (dev / prod) using the following commands:
+- docker run -ti --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app  -p 5000:5000 --env-file .env -d todo-app:dev
+- docker run -ti --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app  -p 5000:5000 --env-file .env -d todo-app:prod
+
+After running, the application will be available locally via any webbrowser:
+- http://127.0.0.1:5000/
+
+Command Breakdown:
+- --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app
+  - mounts the localpath/todo_app to /opt/todoapp/todo_app as a binded folder within the docker container for realtime changes
+- -p 5000:5000
+  - Maps the port 5000 to internal port 5000 where the app shall be hosted
+- --env-file .env
+  - Identify which environment file should be used by the docker container
+- -d
+  - Run environment detached (in background)
+- todo-app:dev
+  - container (todo-app) and version (dev) to run
+
+#### Additional useful Docker commands
+
+- -d (without)
+  - Docker run without using -d will run the docker container in the current shell/bash terminal
+- -it (used without -d)
+  - Launch interactive terminal when developing/testing
+- docker run --help
+  - View other docker run help commands
+- docker ps
+  - View running containers
+- docker exec -it abcdefghijk bash
+  - Access terminal of a running container, where abcdefghijk is the container ID (obtained from docker ps command)
