@@ -188,7 +188,7 @@ Build the relevant environment (dev / prod) using the following commands:
 
 Run the docker project in the relevant environment (dev / prod) using the following commands:
 - docker run -ti --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app  -p 5000:5000 --env-file .env -d todo-app:dev
-- docker run -ti --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app  -p 5000:5000 --env-file .env -d todo-app:prod
+- docker run -ti -p 5000:5000 --env-file .env -d todo-app:prod
 
 After running, the application will be available locally via any webbrowser:
 - http://127.0.0.1:5000/
