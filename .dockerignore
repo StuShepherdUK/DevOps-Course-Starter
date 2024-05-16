@@ -1,0 +1,12 @@
+.env*
+.git*
+
+**/.github
+**/.venv
+**/.vscode
+**/ansible
+
+*.md
+
+**/__pycache__
+.pytest_cache
