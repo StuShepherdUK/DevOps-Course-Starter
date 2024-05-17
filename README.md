@@ -182,7 +182,7 @@ C:\Users\<user>\.docker\config.json
 
 Build the relevant environment (dev / prod / test) using the following commands:
 - docker build --target development --tag todo-app:dev .
-- docker build --target production --tag todo-app:test .
+- docker build --target development --tag todo-app:test .
 - docker build --target production --tag todo-app:prod .
 
 
