@@ -228,3 +228,13 @@ Command Breakdown:
   - View running containers
 - docker exec -it abcdefghijk bash
   - Access terminal of a running container, where abcdefghijk is the container ID (obtained from docker ps command)
+
+
+
+### Automated Testing - Github Actions
+
+Associated with this workspace are github actions (within .github/workflows/) which, upon any push or pull from the github repository will build the docker test container and run the docker test image to ensure tests are all passing.
+
+Results for these tests can be found:
+- https://github.com/*Account*/*Workspace*/actions
+- https://github.com/StuShepherdUK/DevOps-Course-Starter/actions
