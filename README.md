@@ -180,15 +180,20 @@ C:\Users\<user>\.docker\config.json
 
 #### Build
 
-Build the relevant environment (dev / prod) using the following commands:
+Build the relevant environment (dev / prod / test) using the following commands:
 - docker build --target development --tag todo-app:dev .
+- docker build --target production --tag todo-app:test .
 - docker build --target production --tag todo-app:prod .
+
 
 #### Run
 
 Run the docker project in the relevant environment (dev / prod) using the following commands:
 - docker run -ti --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app  -p 5000:5000 --env-file .env -d todo-app:dev
+- docker run -ti --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app  -p 5000:5000 --env-file .env -d todo-app:test
 - docker run -ti -p 5000:5000 --env-file .env -d todo-app:prod
+
+*Note: Within windows, $(pwd) only works with powershell not cmd/dos.  Cmd/dos requires %cd%*
 
 After running, the application will be available locally via any webbrowser:
 - http://127.0.0.1:5000/

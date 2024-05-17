@@ -21,3 +21,10 @@ FROM base as development
 ENV FLASK_DEBUG=true
 ENV FLASK_ENV=development
 CMD [ "/root/.local/bin/poetry", "run", "flask","run","--host=0.0.0.0"]
+
+
+FROM base as test
+ENV FLASK_DEBUG=true
+ENV FLASK_ENV=development
+CMD [ "/root/.local/bin/poetry", "run", "pytest"]
+#ENTRYPOINT poetry run pytest
