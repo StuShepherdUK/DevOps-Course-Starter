@@ -10,6 +10,17 @@ EXPOSE 5000
 COPY poetry.toml .
 COPY pyproject.toml .
 RUN poetry install
+ADD todo_app $WEBAPP_FOLDER/todo_app
+
+FROM base as development
+ENV FLASK_DEBUG=true
+ENV FLASK_ENV=development
+CMD [ "/root/.local/bin/poetry", "run", "flask","run","--host=0.0.0.0"]
+
+FROM base as test
+ENV FLASK_DEBUG=true
+ENV FLASK_ENV=development
+CMD [ "/root/.local/bin/poetry", "run", "pytest"]
 
 FROM base as production
 ENV FLASK_ENV=production
@@ -17,14 +28,5 @@ ENV FLASK_DEBUG=false
 CMD [ "/root/.local/bin/poetry", "run", "flask","run","--host=0.0.0.0"]
 
 
-FROM base as development
-ENV FLASK_DEBUG=true
-ENV FLASK_ENV=development
-CMD [ "/root/.local/bin/poetry", "run", "flask","run","--host=0.0.0.0"]
 
 
-FROM base as test
-ENV FLASK_DEBUG=true
-ENV FLASK_ENV=development
-CMD [ "/root/.local/bin/poetry", "run", "pytest"]
-#ENTRYPOINT poetry run pytest

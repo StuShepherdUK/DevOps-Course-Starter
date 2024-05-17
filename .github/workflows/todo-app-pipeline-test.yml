@@ -7,4 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: docker build --target development --tag todo-app:test .
+
+    - name: Build the docker image
+      run: docker build --target test --tag todo-app:test .
+
+    - name: Run the docker test image
+      run:  docker run -ti -p 5000:5000 --env-file .env todo-app:test
