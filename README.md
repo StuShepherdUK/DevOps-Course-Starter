@@ -180,15 +180,26 @@ C:\Users\<user>\.docker\config.json
 
 #### Build
 
-Build the relevant environment (dev / prod) using the following commands:
+Build the relevant environment (dev / prod / test) using the following commands:
 - docker build --target development --tag todo-app:dev .
+- docker build --target test --tag todo-app:test .
 - docker build --target production --tag todo-app:prod .
+
 
 #### Run
 
 Run the docker project in the relevant environment (dev / prod) using the following commands:
-- docker run -ti --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app  -p 5000:5000 --env-file .env -d todo-app:dev
-- docker run -ti -p 5000:5000 --env-file .env -d todo-app:prod
+- dev:
+  - Live Edit of Files:
+      - docker run -ti --mount type=bind,source="$(pwd)/todo_app",target=/opt/todoapp/todo_app  -p 5000:5000 --env-file .env -d todo-app:dev
+  - Static Files:
+      - docker run -ti -p 5000:5000 --env-file .env -d todo-app:dev
+- test:
+  - docker run -ti -p 5000:5000 --env-file .env -d todo-app:test
+- prod:
+  - docker run -ti -p 5000:5000 --env-file .env -d todo-app:prod
+
+*Note: Within windows, $(pwd) only works with powershell not cmd/dos.  Cmd/dos requires %cd%*
 
 After running, the application will be available locally via any webbrowser:
 - http://127.0.0.1:5000/
@@ -217,3 +228,13 @@ Command Breakdown:
   - View running containers
 - docker exec -it abcdefghijk bash
   - Access terminal of a running container, where abcdefghijk is the container ID (obtained from docker ps command)
+
+
+
+### Automated Testing - Github Actions
+
+Associated with this workspace are github actions (within .github/workflows/) which, upon any push or pull from the github repository will build the docker test container and run the docker test image to ensure tests are all passing.
+
+Results for these tests can be found:
+- https://github.com/*Account*/*Workspace*/actions
+- https://github.com/StuShepherdUK/DevOps-Course-Starter/actions
