@@ -238,3 +238,114 @@ Associated with this workspace are github actions (within .github/workflows/) wh
 Results for these tests can be found:
 - https://github.com/*Account*/*Workspace*/actions
 - https://github.com/StuShepherdUK/DevOps-Course-Starter/actions
+
+
+## Deploying on Server(s) onto Azure Cloud Platform
+
+### Prequesits
+
+#### Docker Hub
+
+Ensure access to a public docker hub repository - Azure will require public access to pull the container from the repository
+
+#### Azure Resources
+
+Ensure access to an Active Azure account with an existing resource group with the necessary permissions to create cloud components within.
+
+As part of the deployment, resource names will be required to populate the Azure command line scripts, ensure these are understood and note them down:
+
+- `resource_group_name` = My_Resource_Group
+- `appservice_plan_name` = My_Todoapp_Appserviceplan
+- `webapp_name` = My-Todo-App
+- `dockerhub_username` = dockerusername
+- `container-image-name` = dockercontainerimagename
+
+Note: These reference names will be referenced below within the command line call's where necessary and should be replaced with their suitable value
+
+#### Environment Variables
+
+You'll also need to clone a new `.env.json` file from the `.env.json.template` to store local configuration options. This is a one-time operation on first setup:
+
+```bash
+$ cp .env.json.template .env.json  # (first time only)
+```
+
+The `.env.json` file is used by the azure command line tools to push the environment variables to the App Service - Web App.  Ensure that the environment variables are correct.
+
+#### Local CLI Tools
+
+Ensure the following local CLI tools are installed and available:
+- Docker
+    - Typically installed with local docker application
+- Azure CLI
+    - See: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli
+
+Note: Ensure installed Azure CLI is upto date as Microsoft commands can change frequently which can cause commands not to function as expected: `az upgrade`
+
+### Deployment Steps
+
+These steps are all run via a command prompt, if in windows, recommend GitBash command prompt.  (Possibily some commands may not function as excepted in a DOS or PowerShell prompt)
+
+#### Push Docker Image to Docker Hub
+
+1. Login to docker
+    - docker login
+2. Build the docker image for the docker cloud store
+    - docker build --target production --tag `dockerhub_username`/`container-image-name`:latest .
+3. Push docker image to the docker cloud store
+    - docker push `dockerhub_username`/`container-image-name`:latest
+4. View / Ensure docker image pushed correctly by viewing online.
+    - Goto https://hub.docker.com/, login and check the container image is available
+
+#### Azure Deployment
+
+5. Login to Azure
+    - az login
+6. Create an app service plan to host the web application:
+    - az appservice plan create --resource-group `resource_group_name` -n `appservice_plan_name` --sku B1 --is-linux
+7. Create a web app within the app service plan, linked to the docker image:
+    -az webapp create --resource-group `resource_group_name` --plan `appservice_plan_name` --name `webapp_name` --deployment-container-image-name docker.io/`dockerhub_username`/`container-image-name`:latest
+8. Push variables from `env.json` to the webapp
+    - az webapp config appsettings set -g `resource_group_name` -n `webapp_name` --settings @env.json
+
+The above steps have created an application service plan to host the web application.  The web application is set to pull the docker image from docker hub and apply the environment settings during run.
+
+9. Check website:
+    - http://`webapp_name`.azurewebsites.net/
+
+Note: First run of the site or after the site has not been used for a period of time, may take a short period to launch. 
+
+### Deployment Debug
+
+If any of the steps fail within Azure there are a couple of places to check for logs:
+
+1. View Web App Live Log Stream (Active current connections and activities)
+    - Within the `Web App`, Left-hand Menu -> `Log stream`
+2. View deployment logs (Ensure docker image being pulled successfully etc.)
+    - Within the `Web App`, Left-hand Menu -> `Deployment` -> `Deployment Center` -> `Logs`
+
+Additional logging is available within the `Web App` -> Left-Hand Menu -> `Monitoring` section however these have not been enabled within this deployment,
+
+### Webhook for CI/CD steps
+
+To add in CI/CD, web hooks to the web application are required.  Within the Azure Portal within a web browser:
+- Goto the App Service
+  - Goto Deployment -> Deployment Center
+    - Get the webhook URL secret.  This contains:
+      - deployment_username
+      - deployment_password
+      - webapp_name
+
+Important: The default webhook starts with `https://$`.   When using tools such as curl in windows it is important to 'escape' the $ sign by adding a single back-slash in front ( \ ) 
+
+Test the webhook using curl:
+-  curl -dH -X POST "https://\\$`deployment_username`:`deployment_password`@`webapp_name`.scm.azurewebsites.net/docker/hook"
+
+A successful test will respond with a JSON object containing the OperationId and TrackingUrl for the logstream
+
+```json
+{
+"OperationId":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+,"TrackingUrl":"https://webapp_name_here.scm.azurewebsites.net/api/logstream?filter=op:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,volatile:false"
+}
+```
