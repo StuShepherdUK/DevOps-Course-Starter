@@ -349,3 +349,20 @@ A successful test will respond with a JSON object containing the OperationId and
 ,"TrackingUrl":"https://webapp_name_here.scm.azurewebsites.net/api/logstream?filter=op:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,volatile:false"
 }
 ```
+
+### Automated pipeline between Git, Docker and Azure
+
+A GitHub Workflow job 'push_to_prod' is included within github actions workflow (./github/workflows) where by any push to the main branch will, after a successful test ('build_and_test' job), automatically push a docker build using production criteria and latest tag to Docker Hub. After this the Azure webhook is called, linked to the Docker Hub which will pull the latest build and deploy into the Azure Web App service. The docker credentials and azure webhook are stored as secrets within the GitHub repository.
+
+
+#### Git Hub Secrets
+
+1. Within the GitHub Account, Correct Repository
+2. Goto Settings
+3. Secrets and Variables > Actions
+4. Repository Secrets:
+    - DOCKER_USERNAME - Username for docker account (To enable build/push)
+    - DOCKER_PASSWORD - Password for docker account (To enable build/push)
+    - AZURE_WEBHOOK - contains the azure webhook url to trigger the Azure pull / deploy function
+
+
