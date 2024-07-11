@@ -42,3 +42,5 @@ jobs:
     - name: Run the docker test image
       run:  docker push stushepherd181/todo-app:latest
 
+    - name: Trigger Azure Webhook to update site
+      run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK }}'
