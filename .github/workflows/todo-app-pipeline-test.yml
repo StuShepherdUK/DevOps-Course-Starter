@@ -33,5 +33,10 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Publish
-      run: echo Publishing!
+
+    - name: Build the production docker image
+      run: docker build --target production --tag stushepherd181/todo-app:latest .
+  
+    - name: Run the docker test image
+      run:  docker push stushepherd181/todo-app:latest
+
