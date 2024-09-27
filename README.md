@@ -343,17 +343,3 @@ A GitHub Workflow job 'push_to_prod' is included within github actions workflow 
   - az cosmosdb keys list -n <cosmos_account_name> -g <resource_group_name> --type connection-strings
   - az cosmosdb keys list -n stushep-todoapp-db -g Cohort31_StuShe_ProjectExercise --type connection-strings
 
-# Notes for module 10:
-
-<root folder>
-
-Add pymongo to testing suite
-```bash
-
-```
-
-```bash
-$ pip3 install mongomock
-$ poetry add pymongo
-$ poetry add setuptools  
-```
