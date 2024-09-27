@@ -62,6 +62,14 @@ Once all the dependancies have been installed, start testing by running:
 $ pytest
 ```
 
+Additional Notes:
+* Install pytest:  pip install pytest
+* Install mongomock: pip install mongomock
+* Add mongomock to poetry: poetry add pymongo
+* Add setuptools to poetry: poetry add setuptools
+* Running through poetry: poetry run pytest
+
+
 You should see output similar to the following:
 ```bash
 * ====== test session starts ======
@@ -101,53 +109,6 @@ Integration tests are set to use the test environment file .env.test instead of 
 Updates to any environment variables must be updated here along side the core environment files to maintain testing functionality
 
 *Note: Ensure no secrets are stored within the .env.test file*
-
-
-### Deploying on Server(s) using Ansible
-
-#### Initial Setup
-
-- Atleast two servers on the same network, one control node, 1+ managed node
-  - managed nodes should have internet access enabled for port 5000
-- Ability to ssh to control node
-  - Access through either:
-    - Username / Password
-    - Shared SSH key
-      - ssh-keygen -t ed25519 -C "you@email.com"
-      - ssh-copy-id username@controlnodeip  (ec2-user@1.2.3.4)
-- From the control node, setup ability to ssh to the managed nodes
-  - Enable access through an SSH Key setup from the control node (Password access can not be used):
-    - ssh-keygen -t ed25519 -C "you@email.com"
-    - ssh-copy-id username@managednodeip  (ec2-user@1.2.3.4)
-- Within the control node, ensure ansible is installed
-  - ansible --version
-  - if not, install:
-    - sudo pip install ansible
-- Copy local files from "ansible/home/ec2-user" to the control node "/home/ec2-user" path
-    - .env.j2
-    - configure_webservers.yml
-    - controlled_nodes.ini
-    - todoapp.service
-
-- Ensure that the managed nodes are correctly listed within controlled_nodes.ini
-
-```
-    [webservers]
-    managednodeip1
-    managednodeip2
-    managednodeipx
-```
-
-#### Running Ansible
-
-- Within the control node:
-  - cd /home/ec2-user
-  - ansible-playbook configure_webservers.yml -i controlled_nodes.ini
-- Ensure that there are no errors
-- navigate to any host ip address in a public web browser:
-  - http://managednodeip:5000
-
-
 
 
 ## Deploying on Server(s) using Docker
@@ -366,3 +327,33 @@ A GitHub Workflow job 'push_to_prod' is included within github actions workflow 
     - AZURE_WEBHOOK - contains the azure webhook url to trigger the Azure pull / deploy function
 
 
+# Azure Mongo DB
+
+1. Create a CosmosDB Account:
+
+  - az cosmosdb create --name <cosmos_account_name> --resource-group <resource_group_name> --kind MongoDB --capabilities EnableServerless --server-version 4.2
+
+  - az cosmosdb create --name stushep-todoapp-db --resource-group Cohort31_StuShe_ProjectExercise --kind MongoDB --capabilities EnableServerless --server-version 4.2
+
+2. Create a MongoDB Database within the account:
+  - az cosmosdb mongodb database create --account-name <cosmos_account_name> --name <database_name> --resource-group <resource_group_name>
+  - az cosmosdb mongodb database create --account-name stushep-todoapp-db --name todo_app --resource-group Cohort31_StuShe_ProjectExercise
+
+3. Get Account details:
+  - az cosmosdb keys list -n <cosmos_account_name> -g <resource_group_name> --type connection-strings
+  - az cosmosdb keys list -n stushep-todoapp-db -g Cohort31_StuShe_ProjectExercise --type connection-strings
+
+# Notes for module 10:
+
+<root folder>
+
+Add pymongo to testing suite
+```bash
+
+```
+
+```bash
+$ pip3 install mongomock
+$ poetry add pymongo
+$ poetry add setuptools  
+```
