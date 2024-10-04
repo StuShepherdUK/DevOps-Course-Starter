@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect
 from todo_app.flask_config import Config
 
-from todo_app.data.trello_items import get_items,add_item,update_item
+from todo_app.data.mongo_items import get_items,add_item,update_item
 from todo_app.classes.view_model import ViewModel
+
+
 
 def create_app():
     app = Flask(__name__)
@@ -26,6 +28,7 @@ def create_app():
         item_to_update_id = request.form['item_id']
         item_source = request.form['item_source']
         update_item(item_to_update_id,item_source)
+        
         return redirect('/')
 
     return app
