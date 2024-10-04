@@ -86,5 +86,3 @@ def create_app():
         return redirect('/')
 
     return app
-
-# change to allow push to test deployment
