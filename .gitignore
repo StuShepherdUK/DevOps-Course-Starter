@@ -119,3 +119,18 @@ env/
 ### Configuration files ###
 .env
 /env.json
+
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.*log
+*.tfvars
+*.tfvars.json
+override.tf 
+override.tf.json
+*_override.tf
+*_oerride.tf.json
+.terraform.tfstate.lock.info
+.terraformrc
+terraform.rc

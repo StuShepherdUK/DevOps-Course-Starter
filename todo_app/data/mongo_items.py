@@ -86,7 +86,7 @@ def update_item(item_to_update_id,previous_status):
             target_status = 'done'
 
         update_item = { "status":target_status, "modified":datetime.now(tz=timezone.utc)}
-        
+        print("UPDATE:", update_item)
         db[db_table].update_one({"_id":item_to_update_id}, {"$set": update_item})
         
         get_items()
