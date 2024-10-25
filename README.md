@@ -373,3 +373,24 @@ OAuth security is managed via GitHub security.  The output's from the setup are 
     * Note the client Id
     * Store these values in the environment file as necessary 
       
+
+
+# Terraform
+
+## Remote State Setup
+
+- setup a remote storage
+
+## Terraform Variables
+
+- set variables in file
+
+## Running Terraform
+
+
+
+az account list
+
+az ad sp create-for-rbac --name "stu-todo-app" --role Contributor --scopes /subscriptions/d33b95c7-af3c-4247-9661-aa96d47fccc0/resourceGroups/Cohort31_StuShe_ProjectExercise
+
+

@@ -5,11 +5,18 @@ terraform {
             version = ">= 3.8"
         }
     }
+
+    backend "azurerm" {
+      resource_group_name   = "Cohort31_StuShe_ProjectExercise"
+      storage_account_name  = "stushepterraformremstore"
+      container_name        = "remote-state"
+      key                   = "stu-todoapp-terraform.tfstate"
+    }
 }
 
 provider "azurerm" {
     features {}
-    subscription_id = var.AZURE_SUBSCRIPTION 
+    subscription_id = var.AZURE_SUBSCRIPTION
 }
 
 data "azurerm_resource_group" "main" {
@@ -44,9 +51,9 @@ resource "azurerm_linux_web_app" "main" {
     }
 
     app_settings = {
-        "DB_COLLECTION"                         = var.DB_COLLECTION
+        "DB_COLLECTION"                         = var.COSMOSDB_COLLECTION_NAME
         "DB_CONNECTION_STRING"                  = azurerm_cosmosdb_account.db.primary_mongodb_connection_string
-        "DB_TABLE"                              = var.DB_TABLE
+        "DB_TABLE"                              = var.COSMOSDB_TABLE_NAME
         "FLASK_APP"                             = var.FLASK_APP
         "FLASK_DEBUG"                           = var.FLASK_DEBUG
         "OAUTH_CLIENT"                          = var.OAUTH_CLIENT
@@ -105,7 +112,7 @@ resource "azurerm_cosmosdb_account" "db" {
 }
 
 resource "azurerm_cosmosdb_mongo_database" "main" {
-    name                = var.COSMOSDB_DATABASE_NAME
+    name                = var.COSMOSDB_COLLECTION_NAME
     resource_group_name = azurerm_cosmosdb_account.db.resource_group_name
     account_name        = azurerm_cosmosdb_account.db.name
 
@@ -115,7 +122,7 @@ resource "azurerm_cosmosdb_mongo_database" "main" {
 }
 
 resource "azurerm_cosmosdb_mongo_collection" "main" {
-    name                = var.COSMOSDB_COLLECTION_NAME
+    name                = var.COSMOSDB_TABLE_NAME
     resource_group_name = azurerm_cosmosdb_account.db.resource_group_name
     account_name        = azurerm_cosmosdb_account.db.name
     database_name       = azurerm_cosmosdb_mongo_database.main.name
