@@ -14,7 +14,7 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
 jobs:
-  build_and_test_docker:
+  build_and_test_docker_and_terraform:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
@@ -26,7 +26,13 @@ jobs:
     - name: Run the docker test image
       run:  docker run -p 5000:5000 --env-file .env.test todo-app:test
 
-  
+    - uses: hashicorp/setup-terraform@v3
+    # Initialize Terraform with an Azure storage account to store the Terraform State
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+
 
   push_docker_to_prod:
     name: Push To Production
@@ -52,25 +58,22 @@ jobs:
     - name: Trigger Azure Webhook to update site
       run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK }}'
 
-  init_and_apply_infrastructure:
-    name: Terraform Init and Apply
-    runs-on: ubuntu-latest
-    steps:
-    - uses: hashicorp/setup-terraform@v3
-
-    # Initialize Terraform with an Azure storage account to store the Terraform State
-    - name: Terraform Init
-      id: init
-      run: terraform init
+  # init_and_apply_infrastructure:
+  #   name: Terraform Init and Apply
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: hashicorp/setup-terraform@v3
 
 
-    # Run Terraform plan for pull requests only
-    # - name: Terraform Plan
-    #   if: github.event_name == 'pull_request'
-    #   id: plan
-    #   run: terraform plan -no-color
+
+
+  #   # Run Terraform plan for pull requests only
+  #   # - name: Terraform Plan
+  #   #   if: github.event_name == 'pull_request'
+  #   #   id: plan
+  #   #   run: terraform plan -no-color
   
-    # Run Terraform apply for push to the main branch
-    # - name: Terraform Apply
-    #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    #   run: terraform apply -auto-approve
+  #   # Run Terraform apply for push to the main branch
+  #   # - name: Terraform Apply
+  #   #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #   #   run: terraform apply -auto-approve
