@@ -65,7 +65,7 @@ resource "azurerm_linux_web_app" "main" {
 }
 
 resource "azurerm_cosmosdb_account" "db" {
-    name                = var.COSMOSDB_ACCOUNT_NAME
+    name                = "${var.COSMOSDB_ACCOUNT_NAME}"
     location            = data.azurerm_resource_group.main.location
     resource_group_name = data.azurerm_resource_group.main.name
     offer_type          = "Standard"
