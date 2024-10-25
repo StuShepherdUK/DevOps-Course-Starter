@@ -1,6 +1,6 @@
 # Core Variables
 variable "AZURE_SUBSCRIPTION" {
-            description = "Azure subscription id"
+            description = "Azure subscription Id"
             sensitive = true
         }
 variable "AZURE_RESOURCE_GROUP" {
