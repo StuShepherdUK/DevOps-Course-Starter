@@ -88,6 +88,5 @@ jobs:
 
     # Run Terraform apply for push to the main branch
     - name: Terraform Apply
-      if: github.event_name == 'push' 
-        # && github.ref == 'refs/heads/main'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: terraform apply -no-color -auto-approve
