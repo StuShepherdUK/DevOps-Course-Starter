@@ -38,7 +38,7 @@ def get_items():
                     ))
 
         return_items = all_items
-        session.clear()
+        # session.clear()
         return return_items
 
     except Exception as e:
