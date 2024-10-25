@@ -71,7 +71,7 @@ jobs:
     # Run Terraform plan for pull requests only
     - name: Terraform Plan
       id: plan
-      run: terraform plan -no-color
+      run: terraform plan -no-color -var OAUTH_CLIENT="${{ secrets.TF_VAR_OAUTH_CLIENT }}" -var OAUTH_SECRET="${{ secrets.TF_VAR_OAUTH_SECRET }}" -var SECRET_KEY="${{ secrets.TF_VAR_SECRET_KEY }}"
   
   #   # Run Terraform apply for push to the main branch
   #   # - name: Terraform Apply
