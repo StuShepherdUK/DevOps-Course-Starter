@@ -71,8 +71,31 @@ jobs:
     # Run Terraform plan for pull requests only
     - name: Terraform Plan
       id: plan
-      run: terraform plan -no-color -var OAUTH_CLIENT="${{ secrets.TF_VAR_OAUTH_CLIENT }}" -var OAUTH_SECRET="${{ secrets.TF_VAR_OAUTH_SECRET }}" -var SECRET_KEY="${{ secrets.TF_VAR_SECRET_KEY }}"
-  
+      run: terraform plan  \ 
+              -no-color  \
+              -var OAUTH_CLIENT="${{ secrets.TF_VAR_OAUTH_CLIENT }}" \
+              -var OAUTH_SECRET="${{ secrets.TF_VAR_OAUTH_SECRET }}"" \
+              -var SECRET_KEY="${{ secrets.TF_VAR_SECRET_KEY }}"  \
+              -var AZURE_SUBSCRIPTION="${{ vars.TF_VAR_AZURE_SUBSCRIPTION }}" \
+              -var AZURE_RESOURCE_GROUP="${{ vars.TF_VAR_AZURE_RESOURCE_GROUP }}" \
+              -var APP_SERVICE_PLAN_NAME="${{ vars.TF_VAR_APP_SERVICE_PLAN_NAME }}" \
+              -var APP_SERVICE_PLAN_OS="${{ vars.TF_VAR_APP_SERVICE_PLAN_OS }}" \
+              -var APP_SERVICE_PLAN_SKU="${{ vars.TF_VAR_APP_SERVICE_PLAN_SKU }}" \
+              -var WEB_APP_NAME="${{ vars.TF_VAR_WEB_APP_NAME }}" \
+              -var DOCKER_IMAGE_NAME="${{ vars.TF_VAR_DOCKER_IMAGE_NAME }}" \
+              -var DOCKER_REGISTRY_URL="${{ vars.TF_VAR_DOCKER_REGISTRY_URL }}" \
+              -var FLASK_APP="${{ vars.TF_VAR_FLASK_APP }}" \
+              -var FLASK_DEBUG="${{ vars.TF_VAR_FLASK_DEBUG }}" \
+              -var WEBSITE_ENABLE_APP_SERVICE_STORAGE="${{ vars.TF_VAR_WEBSITE_ENABLE_APP_SERVICE_STORAGE }}" \
+              -var WEBSITE_PORT="${{ vars.TF_VAR_WEBSITE_PORT }}" \
+              -var COSMOSDB_ACCOUNT_NAME="${{ vars.TF_VAR_COSMOSDB_ACCOUNT_NAME }}" \
+              -var COSMOSDB_COLLECTION_NAME="${{ vars.TF_VAR_COSMOSDB_COLLECTION_NAME }}" \
+              -var COSMOSDB_TABLE_NAME="${{ vars.TF_VAR_COSMOSDB_TABLE_NAME }}"
+            
+
+
+
+
   #   # Run Terraform apply for push to the main branch
   #   # - name: Terraform Apply
   #   ## #  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
