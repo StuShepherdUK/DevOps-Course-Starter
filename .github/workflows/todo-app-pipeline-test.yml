@@ -45,10 +45,6 @@ jobs:
     - name: Run the docker test image
       run:  docker run -p 5000:5000 --env-file .env.test todo-app:test
 
-
-
-
-
   push_docker_to_prod:
     name: Push To Production
     runs-on: ubuntu-latest
@@ -78,7 +74,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-
     - uses: hashicorp/setup-terraform@v3
 
     # Initialize Terraform with an Azure storage account to store the Terraform State
@@ -86,17 +81,13 @@ jobs:
       id: init
       run: terraform init
 
-
     # Run Terraform plan for pull requests only
     - name: Terraform Plan
       id: plan
       run: terraform plan -no-color
 
-
-
-
-
-  #   # Run Terraform apply for push to the main branch
-  #   # - name: Terraform Apply
-  #   ###  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  #   #   run: terraform apply -auto-approve
+    # Run Terraform apply for push to the main branch
+    - name: Terraform Apply
+      if: github.event_name == 'push' 
+        # && github.ref == 'refs/heads/main'
+      run: terraform apply -no-color -auto-approve
