@@ -1,0 +1,27 @@
+# Core Variables
+AZURE_SUBSCRIPTION                      = "subscription_id"
+AZURE_RESOURCE_GROUP                    = "resource_group_name"
+
+# App Service Plan
+APP_SERVICE_PLAN_NAME                   = "tf_CUSTOM_todoapp_appserviceplan"
+APP_SERVICE_PLAN_OS                     = "Linux"
+APP_SERVICE_PLAN_SKU                    =  "B1"
+
+# Web App
+WEB_APP_NAME                            = "tf-CUSTOM-todoapp"
+## Docker Variables
+DOCKER_IMAGE_NAME                       = "CUSTOM/my-todo-app:latest"
+DOCKER_REGISTRY_URL                     = "https://docker.io"
+## Environment Variables
+FLASK_APP                               = "todo_app/app"
+FLASK_DEBUG                             = "False"
+OAUTH_CLIENT                            = "Oauth_Client_Id"
+OAUTH_SECRET                            = "Oauth_Secret_Id"
+SECRET_KEY                              = "fake-secret-key"
+WEBSITE_ENABLE_APP_SERVICE_STORAGE      = "false"
+WEBSITE_PORT                            = 5000
+
+# CosmoDB
+COSMOSDB_ACCOUNT_NAME                   = "tf-CUSTOM-todoapp-db"
+COSMOSDB_COLLECTION_NAME                = "CUSTOM-todoapp-db"
+COSMOSDB_TABLE_NAME                     = "todo_app"
