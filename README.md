@@ -1,24 +1,44 @@
 # DevOps Apprenticeship: Project Exercise
 
-> If you are using GitPod for the project exercise (i.e. you cannot use your local machine) then you'll want to launch a VM using the [following link](https://gitpod.io/#https://github.com/CorndelWithSoftwire/DevOps-Course-Starter). Note this VM comes pre-setup with Python & Poetry pre-installed.
+## Overview
+
+An application created using Python Flask with Poetry to add/modify todo items stored within a database. The application is run within a docker container. The solution uses GitHub for source control and authorization.  The solution is hosted within Microsoft Azure cloud using web app services.  Using GitHub Actions (WebHooks), activated by the source control, deploy to Azure automatically when there are specific updates from the Master Branch. Security is managed using GitHub OAuth service. 
 
 ## System Requirements
+
+## Docker
+
+The project uses docker to run the and build the project locally.  Install the appropriate version from their website: https://www.docker.com/
+
+An account will also be required which is referenced during docker builds, i.e. `--tag myaccountname/my-todo-app:latest`
+
+Ensure that any required application within Docker Hub Repository is enabled for `public access`.  This is to ensure Azure can pull the repository into its service.
+
+## Microsoft Azure CLI
+
+The project uses the Microsoft Azure Command Line Interface (CLI) tool. Install the appropriate version from their webiste:  https://learn.microsoft.com/en-us/cli/azure/
+
+Note: Ensure installed Azure CLI is upto date as Microsoft commands can change frequently which can cause commands not to function as expected: `az upgrade`
+
+## Terraform
+
+The project uses Terraform to deploy its cloud solution using Infrastructure As Code (IAC).  Install the appropriate version from their website: https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+
+## Python Poetry
 
 The project uses poetry for Python to create an isolated environment and manage package dependencies. To prepare your system, ensure you have an official distribution of Python version 3.8+ and install Poetry using one of the following commands (as instructed by the [poetry documentation](https://python-poetry.org/docs/#system-requirements)):
 
 ### Poetry installation (Bash)
-
 ```bash
 curl -sSL https://install.python-poetry.org | python3 -
 ```
 
 ### Poetry installation (PowerShell)
-
 ```powershell
 (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
 ```
 
-## Dependencies
+###  Poetry Install
 
 The project uses a virtual environment to isolate package dependencies. To create the virtual environment and install required packages, run the following from your preferred shell:
 
@@ -26,14 +46,25 @@ The project uses a virtual environment to isolate package dependencies. To creat
 $ poetry install
 ```
 
-You'll also need to clone a new `.env` file from the `.env.template` to store local configuration options. This is a one-time operation on first setup:
+
+## Dependencies
+
+### Python and Poetry Packages
+
+The solution requires additional libraries to be installed for Python and Poetry:
 
 ```bash
-$ cp .env.template .env  # (first time only)
+$ pip install pytest
+$ pip install mongomock
+$ poetry add pymongo
+$ poetry add setuptools
 ```
 
-The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/1.1.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
+### Environment Variables
 
+The solution uses secrets within environment variables to control the application setup. Create copies of `.env.template` to `.env`.
+
+The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/1.1.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
 
 ## Running the App
 
@@ -42,7 +73,7 @@ Once the all dependencies have been installed, start the Flask app in developmen
 $ poetry run flask run
 ```
 
-You should see output similar to the following:
+Expected output similar to the following:
 ```bash
  * Serving Flask app "app" (lazy loading)
  * Environment: development
@@ -54,25 +85,16 @@ You should see output similar to the following:
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
-
 ## Testing the App
 
 Once all the dependancies have been installed, start testing by running:
 ```bash
 $ pytest
+< or >
+$ poetry run pytest
 ```
 
-Additional Notes:
-* Install pytest:  pip install pytest
-* Install mongomock: pip install mongomock
-* Install flask_login: pip install flask_login
-* Add mongomock to poetry: poetry add pymongo
-* Add setuptools to poetry: poetry add setuptools
-* Add flask_login to poetry: poetry add flask-login
-* Running through poetry: poetry run pytest
-
-
-You should see output similar to the following:
+Expected output similar to the following:
 ```bash
 * ====== test session starts ======
 * platform win32 -- Python 3.xx.x, pytest-x.x.x, pluggy-x.x.x
@@ -83,6 +105,7 @@ You should see output similar to the following:
 *
 * ====== n passes in X.XXs ======
 ```
+
 
 In the event of an error and the testing failing:
 * Name of test which has failed shall be displayed
@@ -108,12 +131,9 @@ Summary example where the assert value of 3 was incorrect and the value of 2 was
 ### Test Dependencies
 Integration tests are set to use the test environment file .env.test instead of the main applications .env file
 
-Updates to any environment variables must be updated here along side the core environment files to maintain testing functionality
-
 *Note: Ensure no secrets are stored within the .env.test file*
 
-
-## Deploying on Server(s) using Docker
+## Docker - Build solution locally for testing/development
 
 ### Notes for Corporate Proxy Configuration
 
@@ -138,6 +158,7 @@ C:\Users\<user>\.docker\config.json
      "noProxy": "host.docker.internal,localhost,127.0.0.1,.CORPNAMEHERE.com"
    }
  }
+
 
 ### Docker Commands
 
@@ -179,6 +200,19 @@ Command Breakdown:
 - todo-app:dev
   - container (todo-app) and version (dev) to run
 
+#### Push Docker Image to Docker Hub
+
+1. Login to docker
+    - docker login
+2. Build the docker image for the docker cloud store
+    - docker build --target production --tag `dockerhub_username`/`container-image-name`:latest .
+3. Push docker image to the docker cloud store
+    - docker push `dockerhub_username`/`container-image-name`:latest
+4. View / Ensure docker image pushed correctly by viewing online.
+    - Goto https://hub.docker.com/, login and check the container image is available
+
+Note the tag name, this shall be used during the CI/CD pipeline.
+
 #### Additional useful Docker commands
 
 - -d (without)
@@ -192,109 +226,75 @@ Command Breakdown:
 - docker exec -it abcdefghijk bash
   - Access terminal of a running container, where abcdefghijk is the container ID (obtained from docker ps command)
 
+## Azure Cloud Service
 
+The solution is hosted for public access via Microsoft Azure Cloud service.  Additionally a CosmoDB database is used within Azure to securely store the data used by the solution.
 
-### Automated Testing - Github Actions
+The Azure solution is written using Terraform Infrastructure as Cloud and is contained within the following files:
+* main.tf
+* output.tf
+* variables.tf
 
-Associated with this workspace are github actions (within .github/workflows/) which, upon any push or pull from the github repository will build the docker test container and run the docker test image to ensure tests are all passing.
+If working locally, copy the file `variables.auto.tfvars.template` to `variables.auto.tfvars` and populate all the necessary variable values.
 
-Results for these tests can be found:
-- https://github.com/*Account*/*Workspace*/actions
-- https://github.com/StuShepherdUK/DevOps-Course-Starter/actions
+Two variables which are prequesites are the Azure Subscription ID (Account ID) and Resource Group which must be made seperately - Typically by the account Administrator.
 
+Note: The CI/CD pipeline passes the variables in using local environment settings.  This is achieved by the vairable being preced with TF_VAR_, i.e. variable `FLASK_APP` = `TF_VAR_FLASK_APP`
 
-## Deploying on Server(s) onto Azure Cloud Platform
+To 'remember' the current state of the deployment, terraform uses state files.  If a remote state is not specified the state file will be saved localled.  Within `main.tf` the remote state is set within the `backend "terraform > "azurerm"` property.  Ensure the the settings here are correct.
 
-### Prequesits
+If a remote state blob storage container does not exist.  Manually create an Azure Blob storage account within the same resource_group being used.  Within the Blob storage account create a suitable container, for example `remote-state`.  The key value within the remote state must be unique per deployment to avoid overwriting known states.
 
-#### Docker Hub
+### Terraform Commands
 
-Ensure access to a public docker hub repository - Azure will require public access to pull the container from the repository
+To run Terraform locally, ensure that the `variables.auto.tfvars` is completed.  Then log into Azure using the Azure CLI tool previously installed, selecting the necessary subscription id.
 
-#### Azure Resources
+Additionally, within `main.tf` ensure that the correct backend is referenced within the backend "azurerm" property
 
-Ensure access to an Active Azure account with an existing resource group with the necessary permissions to create cloud components within.
-
-As part of the deployment, resource names will be required to populate the Azure command line scripts, ensure these are understood and note them down:
-
-- `resource_group_name` = My_Resource_Group
-- `appservice_plan_name` = My_Todoapp_Appserviceplan
-- `webapp_name` = My-Todo-App
-- `dockerhub_username` = dockerusername
-- `container-image-name` = dockercontainerimagename
-
-Note: These reference names will be referenced below within the command line call's where necessary and should be replaced with their suitable value
-
-#### Environment Variables
-
-You'll also need to clone a new `.env.json` file from the `.env.json.template` to store local configuration options. This is a one-time operation on first setup:
-
-```bash
-$ cp .env.json.template .env.json  # (first time only)
+```terraform
+$ az login 
+- Select subscription
+$ terraform init
+$ terraform plan
 ```
 
-The `.env.json` file is used by the azure command line tools to push the environment variables to the App Service - Web App.  Ensure that the environment variables are correct.
+The plan will validate the cloud state vs local script, compare and identify changes necessary.
 
-#### Local CLI Tools
+```terraform
+$ terraform apply
+- Runs a plan and asks to confirm before applying changes
+$ terraform apply --auto-approve
+- Runs a plan and then automatically applys the changes
+```
 
-Ensure the following local CLI tools are installed and available:
-- Docker
-    - Typically installed with local docker application
-- Azure CLI
-    - See: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli
+## Azure Infrastructure
 
-Note: Ensure installed Azure CLI is upto date as Microsoft commands can change frequently which can cause commands not to function as expected: `az upgrade`
+The terraform infrastructure creates/manages the following services:
+* Service Plan
+  * Linux Web App
+* CosmosDB Account
+  * CosmosDB Mongo Database
+    * CosmosDB Mongo Database Collection 
 
-### Deployment Steps
+### Azure Mongo DB (CosmosDB) Enryption Notes
 
-These steps are all run via a command prompt, if in windows, recommend GitBash command prompt.  (Possibily some commands may not function as excepted in a DOS or PowerShell prompt)
+Azure CosmosDB by default utilises both Enryption in transit and Encryption at rest. Encryption in transit ensures that secure protocols are always required and utilised when sending/reciving the data. Encryption at rest ensures that the data is secured using a key management system (KMS) and azure specifically, access is granted through the Management Service Resource Provider.  The default generated keys are used as standard however it is possible to add custom-managed keys to the data if required.
 
-#### Push Docker Image to Docker Hub
+## Validating Azure Deployment
 
-1. Login to docker
-    - docker login
-2. Build the docker image for the docker cloud store
-    - docker build --target production --tag `dockerhub_username`/`container-image-name`:latest .
-3. Push docker image to the docker cloud store
-    - docker push `dockerhub_username`/`container-image-name`:latest
-4. View / Ensure docker image pushed correctly by viewing online.
-    - Goto https://hub.docker.com/, login and check the container image is available
+A couple of options are available to validate the deployment.
 
-#### Azure Deployment
+- Terraform output - terraform will state if an apply was successful or not
+- Using a web browser goto: http://`webapp_name`.azurewebsites.net/
+- View Web App Live Log Stream (Active current connections and activities)
+    - Within the Azure Web Portal (https://portal.azure.com/), goto the `Resource`, select the `Web App`, Left-hand Menu -> `Log stream`
+- View deployment logs (Ensure docker image being pulled successfully etc.)
+    - Within the Azure Web Portal (https://portal.azure.com/), goto the `Resource`, select the `Web App`, Left-hand Menu -> `Deployment` -> `Deployment Center` -> `Logs`
 
-5. Login to Azure
-    - az login
-6. Create an app service plan to host the web application:
-    - az appservice plan create --resource-group `resource_group_name` -n `appservice_plan_name` --sku B1 --is-linux
-7. Create a web app within the app service plan, linked to the docker image:
-    -az webapp create --resource-group `resource_group_name` --plan `appservice_plan_name` --name `webapp_name` --deployment-container-image-name docker.io/`dockerhub_username`/`container-image-name`:latest
-8. Push variables from `env.json` to the webapp
-    - az webapp config appsettings set -g `resource_group_name` -n `webapp_name` --settings @env.json
+Additional logging is available within the Azure Web Portal (https://portal.azure.com/), goto the `Resource`, select the `Web App` -> Left-Hand Menu -> `Monitoring` section however these have not been enabled within this deployment,
 
-The above steps have created an application service plan to host the web application.  The web application is set to pull the docker image from docker hub and apply the environment settings during run.
 
-9. Check website:
-    - http://`webapp_name`.azurewebsites.net/
-
-Note: First run of the site or after the site has not been used for a period of time, may take a short period to launch. 
-
-##### Ensuring the webapp is using secure connection
-
-Using the azure portal, goto the Web App / Settings / Configuration -> Ensure that HTTPS Only -> On is selected.
-Any connections to http will auto re-direct to https
-
-### Deployment Debug
-
-If any of the steps fail within Azure there are a couple of places to check for logs:
-
-1. View Web App Live Log Stream (Active current connections and activities)
-    - Within the `Web App`, Left-hand Menu -> `Log stream`
-2. View deployment logs (Ensure docker image being pulled successfully etc.)
-    - Within the `Web App`, Left-hand Menu -> `Deployment` -> `Deployment Center` -> `Logs`
-
-Additional logging is available within the `Web App` -> Left-Hand Menu -> `Monitoring` section however these have not been enabled within this deployment,
-
-### Webhook for CI/CD steps
+## Webhook for CI/CD steps
 
 To add in CI/CD, web hooks to the web application are required.  Within the Azure Portal within a web browser:
 - Goto the App Service
@@ -318,45 +318,19 @@ A successful test will respond with a JSON object containing the OperationId and
 }
 ```
 
-### Automated pipeline between Git, Docker and Azure
+## Provisioning Role for CI/CD
 
-A GitHub Workflow job 'push_to_prod' is included within github actions workflow (./github/workflows) where by any push to the main branch will, after a successful test ('build_and_test' job), automatically push a docker build using production criteria and latest tag to Docker Hub. After this the Azure webhook is called, linked to the Docker Hub which will pull the latest build and deploy into the Azure Web App service. The docker credentials and azure webhook are stored as secrets within the GitHub repository.
+For a CI/CD process to run infrastructure commands, such as Terraform, a specific provisioning role must be created/enabled for use.
 
+Run the following command using the Azure CLI to provision a specifc role for use, updating the `role_name`, `subscription_id` and `resource_group_name` accordingly
 
-#### Git Hub Secrets
+- az ad sp create-for-rbac --name "`role_name`" --role Contributor --scopes /subscriptions/`subscription_id`/resourceGroups/`resource_group_name`
 
-1. Within the GitHub Account, Correct Repository
-2. Goto Settings
-3. Secrets and Variables > Actions
-4. Repository Secrets:
-    - DOCKER_USERNAME - Username for docker account (To enable build/push)
-    - DOCKER_PASSWORD - Password for docker account (To enable build/push)
-    - AZURE_WEBHOOK - contains the azure webhook url to trigger the Azure pull / deploy function
+Note the response values, these are needed within the CI/CD pipeline and stored within the GitHub Secrets (See Below)
 
+## GitHub Authorisation / OAuth
 
-# Azure Mongo DB
-
-1. Create a CosmosDB Account:
-
-  - az cosmosdb create --name <cosmos_account_name> --resource-group <resource_group_name> --kind MongoDB --capabilities EnableServerless --server-version 4.2
-
-  - az cosmosdb create --name stushep-todoapp-db --resource-group Cohort31_StuShe_ProjectExercise --kind MongoDB --capabilities EnableServerless --server-version 4.2
-
-2. Create a MongoDB Database within the account:
-  - az cosmosdb mongodb database create --account-name <cosmos_account_name> --name <database_name> --resource-group <resource_group_name>
-  - az cosmosdb mongodb database create --account-name stushep-todoapp-db --name todo_app --resource-group Cohort31_StuShe_ProjectExercise
-
-3. Get Account details:
-  - az cosmosdb keys list -n <cosmos_account_name> -g <resource_group_name> --type connection-strings
-  - az cosmosdb keys list -n stushep-todoapp-db -g Cohort31_StuShe_ProjectExercise --type connection-strings
-
-## Azure Mongo DB (CosmosDB) Enryption
-
-Azure CosmosDB by default utilises both Enryption in transit and Encryption at rest. Encryption in transit ensures that secure protocols are always required and utilised when sending/reciving the data. Encryption at rest ensures that the data is secured using a key management system (KMS) and azure specifically, access is granted through the Management Service Resource Provider.  The default generated keys are used as standard however it is possible to add custom-managed keys to the data if required.
-
-# OAuth setup within GitHub
-
-OAuth security is managed via GitHub security.  The output's from the setup are used within the environment variables file OAUTH_CLIENT and OAUTH_SECRET.  Follow the steps below to setup GitHub Client Authentication:
+The application uses GitHub Authentication through OAuth. The output's from the setup are used within the environment variables file OAUTH_CLIENT and OAUTH_SECRET.  Follow the steps below to setup GitHub Client Authentication:
 
 * Within Github:
   * Click Account Profile, Top-right
@@ -371,26 +345,74 @@ OAuth security is managed via GitHub security.  The output's from the setup are 
   * Within Client secrets section, click to generate a new secret.
     * Note the secret (Only visible once)
     * Note the client Id
-    * Store these values in the environment file as necessary 
-      
+    * Store these values in the environment file as necessary (See below, GitHub Secrets and Variables)
 
+## GitHub Secrets and Variables
 
-# Terraform
+To utilise secure secrets and variables within the solution, the GitHub repository of code shall never contain any secrets or project specific variables.  These variables should be stored within GitHub Secrets / Variables.
 
-## Remote State Setup
+Within GitHub Actions these variables are imported and mapped accordingly for use as necessary (See GitHub Actions below)
 
-- setup a remote storage
+1. Within the GitHub Account, Correct Repository
+2. Goto Settings
+3. Secrets and Variables > Actions
+4. Repository Secrets:
+    - ARM_CLIENT_ID - `appId` from the Provisioning  Role creation
+    - ARM_CLIENT_SECRET - `password` from the Provisioning Role creation
+    - ARM_SUBSCRIPTION_ID - Azure Subscription Id
+    - ARM_TENANT_ID - `tenant_id` from the Provisioning Role creation
+    - AZURE_WEBHOOK - contains the azure webhook url to trigger the Azure pull / deploy function
+    - DOCKER_USERNAME - Username for docker account (To enable build/push)
+    - DOCKER_PASSWORD - Password for docker account (To enable build/push)
+    - TF_VAR_OAUTH_CLIENT - Oauth Client from GitHub Authentication
+    - TF_VAR_OAUTH_SECRET - OAuth Secret from GitHub Authentication
+    - TF_VAR_SECRET_KEY - Custom secret key for the app to use
+5. Repository Variables:
+    - TF_VAR_APP_SERVICE_PLAN_NAME - Custom name for App Service Plan
+    - TF_VAR_APP_SERVICE_PLAN_OS - OS Value, for example `Linux`
+    - TF_VAR_APP_SERVICE_PLAN_SKU - SKU Value, for example `B1`
+    - TF_VAR_AZURE_RESOURCE_GROUP - Azure Resource Group (Created in Prequesite)
+    - TF_VAR_AZURE_SUBSCRIPTION - Azure Subscription Id (Created in Prequesite)
+    - TF_VAR_COSMOSDB_ACCOUNT_NAME - Custom name for CosmoDB
+    - TF_VAR_COSMOSDB_COLLECTION_NAME - Custom collection name
+    - TF_VAR_COSMOSDB_TABLE_NAME - Custom table name - should match solution requirement
+    - TF_VAR_DOCKER_IMAGE_NAME - Docker location / tag of produciton image
+    - TF_VAR_DOCKER_REGISTRY_URL - Docker url, for example `https://docker.io`
+    - TF_VAR_FLASK_APP - Folder location of flask app, for example `todo_app/app`
+    - TF_VAR_FLASK_DEBUG - String value if debug enabled, for example "False"
+    - TF_VAR_WEBSITE_ENABLE_APP_SERVICE_STORAGE - String value if app service storage enabled, for example "false"
+    - TF_VAR_WEBSITE_PORT - Numeric Port number of docker exposed port, for example: 5000
+    - TF_VAR_WEB_APP_NAME - Custom name for web app
 
-## Terraform Variables
+## GitHub Actions
 
-- set variables in file
+The solution uses GitHub Actions located within .github/workflow/`appname`.yml. These actions are run during push/pull requests to the GitHub repository (dependant on the rules applied).
 
-## Running Terraform
+This solution:
+* On Push requests, ignores changes to `.md` files
+* On Pull requests, ignores changes to `.md` files
 
+* Passes in Environment variables from GitHub Secrets and Variables
+  * Variables are mapped to the local system name as necessary to be used by the solution
+* On all requests runs `build_and_test_docker`
+  * Checks out the trigger repo
+  * Builds the docker image for testing
+  * Runs the docker image passing in the test environment file
+* On push request runs `push_docker_to_prod` - if push and main branch
+  * Logs into Docker
+  * Checks out the trigger repo
+  * Builds the docker image for production
+  * Pushes the built image to docker hub
+  * Activates the Azure webhook to pull the latest Docker image to Azure
+* On push request runs `init_and_apply_infrastructure`
+  * Checks out the trigger repo
+  * Terraform Init
+  * Terraform Plan
+  * Terraform Apply - if push and main branch
 
+### Automated Testing - Github Actions
 
-az account list
+Results of testing GitHub Actions can be found here:
 
-az ad sp create-for-rbac --name "stu-todo-app" --role Contributor --scopes /subscriptions/d33b95c7-af3c-4247-9661-aa96d47fccc0/resourceGroups/Cohort31_StuShe_ProjectExercise
-
-
+Results for these tests can be found:
+- https://github.com/*Account*/*Workspace*/actions
