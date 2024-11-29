@@ -18,7 +18,7 @@ def create_app():
     app.config['LOGIN_DISABLED'] = os.getenv('LOGIN_DISABLED') == 'True'
     
     app.logger.setLevel(app.config['LOG_LEVEL'])
-    handler = HTTPSHandler(f'https://logs-01.loggly.com/inputs/{app.config['LOGGLY_TOKEN']}/tag/todo-app')
+    handler = HTTPSHandler(f'https://logs-01.loggly.com/inputs/{app.config["LOGGLY_TOKEN"]}/tag/todo-app')
     handler.setFormatter(
         Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s")
     )
