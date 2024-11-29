@@ -58,6 +58,7 @@ $ pip install pytest
 $ pip install mongomock
 $ poetry add pymongo
 $ poetry add setuptools
+$ poetry add loggly-python-handler
 ```
 
 ### Environment Variables
@@ -416,3 +417,14 @@ Results of testing GitHub Actions can be found here:
 
 Results for these tests can be found:
 - https://github.com/*Account*/*Workspace*/actions
+
+
+
+
+
+Adding Loggly:
+
+www.loggly.com
+Logs -> Customer Tokens -> Add new token -> Set description -> Note secret
+
+install loggly-python-handler using poetry
