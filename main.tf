@@ -56,6 +56,8 @@ resource "azurerm_linux_web_app" "main" {
         "DB_TABLE"                              = var.COSMOSDB_TABLE_NAME
         "FLASK_APP"                             = var.FLASK_APP
         "FLASK_DEBUG"                           = var.FLASK_DEBUG
+        "LOGGLY_TOKEN"                          = var.LOGGLY_TOKEN
+        "LOG_LEVEL"                             = var.LOG_LEVEL
         "OAUTH_CLIENT"                          = var.OAUTH_CLIENT
         "OAUTH_SECRET"                          = var.OAUTH_SECRET
         "SECRET_KEY"                            = var.SECRET_KEY
