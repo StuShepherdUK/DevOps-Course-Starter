@@ -58,6 +58,7 @@ $ pip install pytest
 $ pip install mongomock
 $ poetry add pymongo
 $ poetry add setuptools
+$ poetry add loggly-python-handler
 ```
 
 ### Environment Variables
@@ -65,6 +66,22 @@ $ poetry add setuptools
 The solution uses secrets within environment variables to control the application setup. Create copies of `.env.template` to `.env`.
 
 The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/1.1.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
+
+### Loggly Requirement
+
+For Application logging an account with loggly is required which will log production errors, or when LOG_LEVEL set lower during development and testing, more details
+
+* Goto www.loggly.com and setup an acount
+* On the left-hand menu, select 'Logs'
+* From the top menu, select 'Customer Tokens'
+* Create a new token adding a suitable description
+* Note the secure token
+* Add the token to the variable 'LOGGLY_TOKEN' as necessary within:
+  * .env
+  * .env.json
+  * github secrets TF_VAR_LOGGLY_TOKEN (See section below: GitHub Secrets and Variables)
+
+Error logging can be altered by changing the variable 'LOG_LEVEL'
 
 ## Running the App
 
@@ -364,6 +381,7 @@ Within GitHub Actions these variables are imported and mapped accordingly for us
     - AZURE_WEBHOOK - contains the azure webhook url to trigger the Azure pull / deploy function
     - DOCKER_USERNAME - Username for docker account (To enable build/push)
     - DOCKER_PASSWORD - Password for docker account (To enable build/push)
+    - TF_VAR_LOGGLY_TOKEN - Loggly token from loggly website (See section above)
     - TF_VAR_OAUTH_CLIENT - Oauth Client from GitHub Authentication
     - TF_VAR_OAUTH_SECRET - OAuth Secret from GitHub Authentication
     - TF_VAR_SECRET_KEY - Custom secret key for the app to use
@@ -380,6 +398,7 @@ Within GitHub Actions these variables are imported and mapped accordingly for us
     - TF_VAR_DOCKER_REGISTRY_URL - Docker url, for example `https://docker.io`
     - TF_VAR_FLASK_APP - Folder location of flask app, for example `todo_app/app`
     - TF_VAR_FLASK_DEBUG - String value if debug enabled, for example "False"
+    - TF_VAR_LOG_LEVEL - Log level to use in app i.e. DEBUG, ERROR
     - TF_VAR_WEBSITE_ENABLE_APP_SERVICE_STORAGE - String value if app service storage enabled, for example "false"
     - TF_VAR_WEBSITE_PORT - Numeric Port number of docker exposed port, for example: 5000
     - TF_VAR_WEB_APP_NAME - Custom name for web app
@@ -416,3 +435,5 @@ Results of testing GitHub Actions can be found here:
 
 Results for these tests can be found:
 - https://github.com/*Account*/*Workspace*/actions
+
+

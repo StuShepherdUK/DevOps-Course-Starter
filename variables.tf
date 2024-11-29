@@ -36,6 +36,12 @@ variable "WEB_APP_NAME" {
     variable "FLASK_DEBUG" {
             description = "Enable Python Flask Debug, i.e. TRUE/FALSE"
         }
+    variable "LOGGLY_TOKEN" {
+            description = "Secure token for Loggly Error Logging"
+        }
+    variable "LOG_LEVEL" {
+            description = "Secure token for Loggly Error Logging"
+        }
     variable "OAUTH_CLIENT" { 
             description = "GitHub OAuth Apps - Client ID"
             sensitive = true
