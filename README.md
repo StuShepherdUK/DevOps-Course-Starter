@@ -65,8 +65,10 @@ $ pytest
 Additional Notes:
 * Install pytest:  pip install pytest
 * Install mongomock: pip install mongomock
+* Install flask_login: pip install flask_login
 * Add mongomock to poetry: poetry add pymongo
 * Add setuptools to poetry: poetry add setuptools
+* Add flask_login to poetry: poetry add flask-login
 * Running through poetry: poetry run pytest
 
 
@@ -276,6 +278,11 @@ The above steps have created an application service plan to host the web applica
 
 Note: First run of the site or after the site has not been used for a period of time, may take a short period to launch. 
 
+##### Ensuring the webapp is using secure connection
+
+Using the azure portal, goto the Web App / Settings / Configuration -> Ensure that HTTPS Only -> On is selected.
+Any connections to http will auto re-direct to https
+
 ### Deployment Debug
 
 If any of the steps fail within Azure there are a couple of places to check for logs:
@@ -343,3 +350,26 @@ A GitHub Workflow job 'push_to_prod' is included within github actions workflow 
   - az cosmosdb keys list -n <cosmos_account_name> -g <resource_group_name> --type connection-strings
   - az cosmosdb keys list -n stushep-todoapp-db -g Cohort31_StuShe_ProjectExercise --type connection-strings
 
+## Azure Mongo DB (CosmosDB) Enryption
+
+Azure CosmosDB by default utilises both Enryption in transit and Encryption at rest. Encryption in transit ensures that secure protocols are always required and utilised when sending/reciving the data. Encryption at rest ensures that the data is secured using a key management system (KMS) and azure specifically, access is granted through the Management Service Resource Provider.  The default generated keys are used as standard however it is possible to add custom-managed keys to the data if required.
+
+# OAuth setup within GitHub
+
+OAuth security is managed via GitHub security.  The output's from the setup are used within the environment variables file OAUTH_CLIENT and OAUTH_SECRET.  Follow the steps below to setup GitHub Client Authentication:
+
+* Within Github:
+  * Click Account Profile, Top-right
+    * Select Settings
+      * Select <> Developer Settings
+  * Select OAuth Apps
+    * Click New and add the necessary settings:
+      * Application Name:  name
+      * Homepage Url:   https://myurl/
+      * Authorization callback URl:  https://myurl/login/callback
+    * Click Register
+  * Within Client secrets section, click to generate a new secret.
+    * Note the secret (Only visible once)
+    * Note the client Id
+    * Store these values in the environment file as necessary 
+      
