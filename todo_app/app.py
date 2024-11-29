@@ -19,15 +19,14 @@ def create_app():
     login_manager = LoginManager()
     @login_manager.unauthorized_handler
     def unauthenticated():
-        return app.redirect('https://github.com/login/oauth/authorize?client_id='+os.environ.get('OAUTH_CLIENT'))
+        return app.redirect('https://github.com/login/oauth/authorize?client_id='+os.environ.get('OAUTH_CLIENT')) #+'&prompt=consent'
 
     @login_manager.user_loader
     def load_user(user_id):
-        print("Load User...",user_id)
         return User(user_id)
 
     login_manager.init_app(app)
-
+    
     @app.route('/login/callback')
     def login_callback():
         authCode = request.args.get('code')
@@ -46,7 +45,6 @@ def create_app():
         
         userDetails = json.loads(user_details.content)
         CurrentUser = User(userDetails.get('id'))
-        
         login_user(CurrentUser)
         return redirect('/')
 
